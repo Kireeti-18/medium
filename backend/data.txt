@@ -1,0 +1,25 @@
+{
+    "msg": "Blog created",
+    "blog": {
+        "id": "c96a37a7-79ee-4f1f-8f5e-a5e344fbcb8b",
+        "title": "India",
+        "content": "The Indian government led by the Hindu nationalist Bharatiya Janata Party (BJP) escalated its crackdown on civil society and the media. Authorities have routinely imposed internet shutdowns and prosecuted activists, journalists, and peaceful protesters on fabricated counterterrorism and hate speech laws. They have stifled rights groups using foreign funding regulations or unfounded allegations of financial irregularities. The government has adopted laws and policies that discriminate against religious minorities. This has led to the authorities and their supporters’ vilification of such communities, especially Muslims. Police complicity and failure to act have emboldened Hindu nationalist groups to target civil society groups and minorities with impunity. ",
+        "authorId": "6a95e7f3-9c6f-4e22-8f8d-a1e9fdbbeeec",
+        "published": true,
+        "createdAt": "2025-06-03T04:11:37.581Z",
+        "updatedAt": "2025-06-03T04:11:37.581Z"
+    }
+}
+
+
+
+
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOTVlN2YzLTljNmYtNGUyMi04ZjhkLWExZTlmZGJiZWVlYyIsImV4cCI6MTc0OTc4NzAwNn0.2g92ymkQDtOp7RoYu6nA6yx5dPRIDCNvqkFHcPDBq30",
+    "email": "kireeti1@gmail.com",
+    "id": "6a95e7f3-9c6f-4e22-8f8d-a1e9fdbbeeec"
+}
+
+
+
