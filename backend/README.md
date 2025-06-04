@@ -1,6 +1,6 @@
 ```txt
 npm install
-npm run dev
+npm start
 ```
 
 ```txt
