@@ -1,5 +1,5 @@
 # prod
-dist/
+common/dist/
 
 # dev
 .yarn/
@@ -12,13 +12,13 @@ dist/
 .idea/shelf
 
 # deps
-node_modules/
-.wrangler
+backend/node_modules/
+backend/.wrangler
 
 # env
-.env
-.env.production
-.dev.vars
+backend/.env
+backend/.env.production
+backend/.dev.vars
 
 # logs
 logs/
@@ -32,4 +32,8 @@ lerna-debug.log*
 # misc
 .DS_Store
 
-/src/generated/prisma
+backend/src/generated/prisma
+backend/data.txt
+
+backend/wrangler.jsonc
+common/node_modules
