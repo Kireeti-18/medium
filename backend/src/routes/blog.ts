@@ -2,6 +2,8 @@ import { Hono } from 'hono'
 import { verify } from 'hono/jwt'
 import { BlogUpdateData } from "../interfaces"
 import { isTokenExpired, getUserIdFromToken } from  "../services"
+import {createBlogSchema, updateBlogSchema, deleteBlogSchema} from '@kireeti1887/medium-common-mod'
+
 
 export const blogRouter = new Hono<{
     Bindings: {
@@ -23,7 +25,7 @@ blogRouter.use('/*', async (c, next) => {
      
         if (isExpired)
         {
-            return c.json({ msg: 'Token expired Signin again' }, 401);
+            return c.json({ type: 'invalid_token', msg: 'Token expired Signin again' }, 401);
         }
         const payload = await verify(token, c.env.JWT_SECRET, 'HS256');
         await next()
@@ -39,6 +41,11 @@ blogRouter.use('/*', async (c, next) => {
 blogRouter.post('/', async(c) => {
     const prisma = c.get('prisma');
     const body = await c.req.json()
+    const {success, error} = createBlogSchema.safeParse(body)
+    if (!success) {
+        c.status(400)
+        return c.json({ error: `Invalid request body ${error}` })
+    }
     try {
         const blog = await prisma.blog.create({
             data: {
@@ -63,13 +70,16 @@ blogRouter.post('/', async(c) => {
   
 blogRouter.put('/', async(c) => {
     const prisma = c.get('prisma');
-  
     const authHeader = c.req.header("authorization") || "";
     const token = authHeader.replace("Bearer ", "");
-  
     const userId = getUserIdFromToken(token)
-  
     const body = await c.req.json()
+
+    const {success, error} = updateBlogSchema.safeParse(body)
+    if (!success) {
+        c.status(400)
+        return c.json({ error: `Invalid request body ${error}` })
+    }
     
     const blog = await prisma.blog.findFirst({
         where: { id : body.blogId },
@@ -115,6 +125,12 @@ blogRouter.delete('/', async(c) => {
     const userId = getUserIdFromToken(token)
   
     const body = await c.req.json()
+
+    const {success, error} = deleteBlogSchema.safeParse(body)
+    if (!success) {
+        c.status(400)
+        return c.json({ error: `Invalid request body ${error}` })
+    }
     
     const blog = await prisma.blog.findFirst({
         where: { id : body.blogId },
@@ -159,6 +175,14 @@ blogRouter.get('/:blogId', async(c) => {
                 title: true,
                 content: true,
                 published: true,
+                author: {
+                    select: {
+                        id:true,
+                        email:true,
+                        name: true,
+                        avathar: true
+                    },
+                  },
             }
          });
   
@@ -173,8 +197,8 @@ blogRouter.get('/:blogId', async(c) => {
     }
 })
   
-blogRouter.get('/', async (c) => {
-    const limit: number = 7;
+blogRouter.get('/blogs/list', async (c) => {
+    const limit: number = 10;
     const prisma = c.get('prisma');
 
     const params = c.req.queries();
@@ -196,23 +220,24 @@ blogRouter.get('/', async (c) => {
             skip,
             take: limit,
             where: paramsData,
-            select:{
-                id: true,
-                title: true,
-                content: true,
-                createdAt: true,
+            select: {
+              id: true,
+              title: true,
+              content: true,
+              authorId: true,
+              createdAt: true,
+              author: {
+                select: {
+                  name: true,
+                  avathar: true
+                },
+              },
             },
             orderBy: {
-                createdAt: 'desc',
+              createdAt: 'desc',
             },
-            include: {
-                author: {
-                    select: {
-                        name: true,
-                    },
-                },
-            },
-        });
+          });
+          
 
         const count = await prisma.blog.count({
             where: paramsData,

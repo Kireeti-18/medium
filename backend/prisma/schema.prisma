@@ -20,6 +20,7 @@ model User {
   name      String 
   email     String    @unique
   pass      String 
+  avathar   String    @default("boy-1")  
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   Blogs     Blog[]

@@ -37,3 +37,8 @@ backend/data.txt
 
 backend/wrangler.jsonc
 common/node_modules
+
+backend/.vscode/settings.json
+frontend/.env
+frontend/.gitignore
+.gitignore

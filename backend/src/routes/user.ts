@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import {  sign } from 'hono/jwt'
 import bcrypt from 'bcryptjs';
+import {signinSchema, signupSchema} from '@kireeti1887/medium-common-mod'
+import { isTokenExpired, getUserIdFromToken, getAvatharFromName} from  "../services"
 
 export const userRouter = new Hono<{
     Bindings: {
@@ -12,28 +14,41 @@ export const userRouter = new Hono<{
     }
   }>()
 
-
 userRouter.post('/signup', async(c) => {
   
     const prisma = c.get('prisma');
     const body = await c.req.json()
-
+    const {success, error} = signupSchema.safeParse(body)
+    if (!success) {
+        c.status(400)
+        return c.json({ error: `Invalid request body ${error}` })
+    }
     try {
 
         const saltRounds = 5; 
         const hashedPassword = await bcrypt.hash(body.password, saltRounds);
-
+        const name = body.name
+        const avathar = await getAvatharFromName(name)
         const user = await prisma.user.create({
             data: {
-                name: body.name,
+                name: name,
                 email: body.email,
-                pass: hashedPassword
+                pass: hashedPassword,
+                avathar: avathar
             },  
         })
         const exp = Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60; 
         const token = await sign({ id: user.id, exp }, c.env.JWT_SECRET);
 
-        return c.json({token, email: user.email, id: user.id})
+        return c.json({
+            token,  
+            user: {
+                    email: user.email,
+                    id: user.id,
+                    name: user.name,
+                    avathar: user.avathar
+                },
+            }) 
     } 
     catch (error) {
         c.status(500)
@@ -42,8 +57,47 @@ userRouter.post('/signup', async(c) => {
 })
 
 userRouter.post('/signin', async(c) => {
+
+    const authHeader = c.req.header("authorization") || "Bearer ";
+    const token = authHeader.replace("Bearer ", "");
     const prisma = c.get('prisma');
+
+    if (token.length > 0)
+    {
+        const isExpired = isTokenExpired(token)
+
+        if(!isExpired){
+            const userId = getUserIdFromToken(token)
+            if (userId.length > 0)
+            {
+                const user = await prisma.user.findUnique({
+                    where:{
+                        id: userId
+                    }
+                })
+
+                if(user)
+                {
+                    return c.json({
+                        token,  
+                        user: {
+                            email: user.email,
+                            id: user.id, 
+                            name: user.name,
+                            avathar: user.avathar
+                        }, 
+                    })
+                } 
+            }
+        }
+    }
+
     const body = await c.req.json()
+    const {success, error} = signinSchema.safeParse(body)
+    if (!success) {
+        c.status(400)
+        return c.json({ error: `Invalid request body ${error}` })
+    }
     try {
         const user = await prisma.user.findUnique({
             where:{
@@ -64,8 +118,15 @@ userRouter.post('/signin', async(c) => {
 
         const exp = Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60; 
         const token = await sign({ id: user.id, exp }, c.env.JWT_SECRET);
-        return c.json({token, email: user.email, id: user.id})
-
+        return c.json({
+            token,  
+            user: {
+                email: user.email,
+                id: user.id, 
+                name: user.name,
+                avathar: user.avathar
+            }, 
+        }) 
     }
     catch(e)
     {
