@@ -65,3 +65,15 @@ export function getReqTimeToRead(content: string): string {
   const totalMinutes = Math.ceil(wordCount / AWPM);
   return `${totalMinutes}minute(s) read`;
 }
+
+export function formatToReadableDate(isoString: string): string {
+  const date = new Date(isoString);
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  };
+
+  return date.toLocaleDateString('en-GB', options);
+}

@@ -5,12 +5,13 @@ import { listBlogs } from '../blogs';
 import { handleApiError } from '../utilities';
 import { useNavigate } from 'react-router-dom';
 
-export function useBlogs(next: number) {
+export function useBlogs(loadMore: boolean, callback: () => void) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [blogs, setBlogs] = useAtom(blogsAtom);
 
   useEffect(() => {
+    if (!loadMore || !blogs.paginationAvailable) return;
     async function getBlogs() {
       setLoading(true);
       try {
@@ -29,6 +30,7 @@ export function useBlogs(next: number) {
               totalCount: data.total_count,
               page: data.page,
               count: unique.length,
+              paginationAvailable: data.paginated,
             };
           });
         }
@@ -42,7 +44,8 @@ export function useBlogs(next: number) {
     }
 
     getBlogs();
-  }, [next]);
+    callback();
+  }, [loadMore]);
 
   return { loading };
 }

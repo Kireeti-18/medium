@@ -9,14 +9,17 @@ import type {
 import { signup } from '../../services/user';
 import { userInfoAtom } from '../../services/atoms/user';
 import { useNavigate } from 'react-router-dom';
-import Header from '../shared/Header';
 import { setToken } from '../../services/utilities';
+import Layout from '../shared/Layout';
+import { useState } from 'react';
 
 const Signup = () => {
   const navigate = useNavigate();
   const setUserInfo = useSetAtom(userInfoAtom);
+  const [loading, setLoading] = useState(false);
 
   const signUpHandler = async (params: SigininParmas) => {
+    setLoading(true);
     const response = (await signup(params)) as SigninResponse;
     const data = response.data;
     setToken(data.token);
@@ -28,20 +31,22 @@ const Signup = () => {
       userAvathar: data.user.avathar,
       isLogin: true,
     }));
+    setLoading(false);
     navigate('/', { state: { token: data.token } });
   };
 
   return (
     <>
-      <Header type="login" />
-      <div className="grid grid-rows-2 lg:grid-rows-none lg:grid-cols-2">
-        <div>
-          <Auth type={'signup'} login={signUpHandler} />
+      <Layout type="login" loading={loading}>
+        <div className="grid grid-rows-2 lg:grid-rows-none lg:grid-cols-2">
+          <div>
+            <Auth type={'signup'} login={signUpHandler} />
+          </div>
+          <div>
+            <Quote />
+          </div>
         </div>
-        <div>
-          <Quote />
-        </div>
-      </div>
+      </Layout>
     </>
   );
 };

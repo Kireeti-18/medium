@@ -3,14 +3,18 @@ import { Layout } from '../shared/Layout';
 import { useBlogs } from '../../services/hooks/blogs';
 import { useAtomValue } from 'jotai';
 import { blogsAtom } from '../../services/atoms/blogs';
-import { useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  // const observer = useRef(null);
-  const [next, setNext] = useState(1);
-  const { loading } = useBlogs(next);
+  const { ref, inView } = useInView();
+  const [loadMore, setLoadMore] = useState(true);
+  const { loading } = useBlogs(loadMore, () => setLoadMore(false));
   const blogs = useAtomValue(blogsAtom);
 
+  useEffect(() => {
+    setLoadMore(inView);
+  }, [inView]);
   return (
     <>
       <Layout loading={loading}>
@@ -21,8 +25,9 @@ export default function Home() {
           <div className="w-sm md:w-lg lg:w-2xl xl:w-4xl 2xl:w-7xl">
             {blogs.blogs.map((blog, index) => (
               <BlogCard
-                // ref={index === blogs.count ? : }
+                ref={index === blogs.count - 1 ? ref : undefined}
                 key={blog.id}
+                blogId={blog.id}
                 authorName={blog.author.name}
                 title={blog.title}
                 content={blog.content}

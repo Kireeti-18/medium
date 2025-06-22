@@ -2,15 +2,18 @@ import React from 'react';
 import Header from './Header';
 import Loading from './Loading';
 
+type LayoutType = 'home' | 'login' | 'create';
+
 interface LayoutProps {
   children: React.ReactNode;
   loading: boolean;
+  type?: LayoutType;
 }
 
-export function Layout({ children, loading }: LayoutProps) {
+export function Layout({ children, loading, type = 'home' }: LayoutProps) {
   return (
     <div className="relative h-screen overflow-hidden">
-      <Header type="home" />
+      <Header type={type} />
 
       <div
         className="h-[93vh] overflow-y-auto

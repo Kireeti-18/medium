@@ -175,6 +175,7 @@ blogRouter.get('/:blogId', async(c) => {
                 title: true,
                 content: true,
                 published: true,
+                createdAt: true,
                 author: {
                     select: {
                         id:true,
@@ -243,6 +244,8 @@ blogRouter.get('/blogs/list', async (c) => {
             where: paramsData,
         });
 
+        const paginated = blogs.length === limit
+
         if (!blogs || blogs.length === 0) {
             return c.json({
                 blogs: [],
@@ -254,6 +257,7 @@ blogRouter.get('/blogs/list', async (c) => {
             blogs,
             total_count: count,
             page,
+            paginated: paginated
         });
 
     } catch (error: any) {

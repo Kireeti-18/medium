@@ -12,6 +12,7 @@ const Home = lazy(() => import('./components/home/Home'));
 const Signin = lazy(() => import('./components/authentication/Signin'));
 const Signup = lazy(() => import('./components/authentication/Signup'));
 const Blog = lazy(() => import('./components/blog/Blog'));
+const CreateBlog = lazy(() => import('./components/blog/CreateBlog'));
 
 function App() {
   const navigate = useNavigate();
@@ -30,7 +31,8 @@ function App() {
         userAvathar: data.user.avathar,
         isLogin: true,
       }));
-      navigate('/', { state: { token: data.token } });
+      const path = window.location.pathname;
+      navigate(path, { state: { token: data.token } });
     } catch (error) {
       console.error('Auto-signin failed:', error);
       removeToken();
@@ -51,8 +53,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
         <Route path="/blog">
-          <Route path=":id" element={<Blog />}></Route>
+          <Route path=":blogId" element={<Blog />}></Route>
         </Route>
+        <Route path="/create/blog" element={<CreateBlog />} />
       </Routes>
     </>
   );

@@ -5,6 +5,7 @@ import axios from 'axios';
 // } from '@kireeti1887/medium-common-mod';
 import { API_BASE_URL } from './config';
 import { getToken } from '../services/utilities';
+import type { CreateBlogSchema } from '@kireeti1887/medium-common-mod';
 
 interface listBlogsSchema {
   page?: number;
@@ -17,6 +18,30 @@ export function listBlogs(data: listBlogsSchema) {
         authorization: getToken(),
       },
       params: data,
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
+export function getBlog(blogId: string) {
+  try {
+    return axios.get(`${API_BASE_URL}/blog/${blogId}`, {
+      headers: {
+        authorization: getToken(),
+      },
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
+export function createBlog(data: CreateBlogSchema) {
+  try {
+    return axios.post(`${API_BASE_URL}/blog`, data, {
+      headers: {
+        authorization: getToken(),
+      },
     });
   } catch (e) {
     return Promise.reject(e);
